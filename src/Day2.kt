@@ -9,7 +9,7 @@ fun main() {
     input[1] = 12
     input[2] = 2
 
-    val computer = Computer(input, 0).run()
+    val computer = Computer(input, listOf()).run()
 
     println("2.1:")
     println(computer.getMemory()[0])
@@ -21,7 +21,7 @@ fun main() {
             try {
                 input[1] = i
                 input[2] = j
-                val computer = Computer(input, 0).run()
+                val computer = Computer(input, listOf()).run()
                 if (computer.getMemory()[0] == wantedOutput) {
                     println("2.2:")
                     println(100 * i + j)

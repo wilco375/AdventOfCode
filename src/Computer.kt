@@ -1,12 +1,22 @@
 import java.lang.RuntimeException
 import java.util.*
 
-class Computer(initialMemory: List<Int>, private val input: Int) {
+class Computer(initialMemory: List<Int>, input: List<Int>) {
+    private val input: MutableList<Int> = input.toMutableList()
     private var output = LinkedList<Int>()
     private var mem = initialMemory.toMutableList() // Memory
     private var pc = 0 // Program counter
 
     fun run(): Computer {
+        run(false)
+        return this
+    }
+
+    fun runForOutput(): Int {
+        return run(true)
+    }
+
+    private fun run(returnOutput: Boolean): Int {
         val instr = mem[pc].toString().padStart(5, '0')
         val opCode = instr.substring(3, 5).toInt()
         val mode1 = instr.substring(2, 3).toInt()
@@ -16,7 +26,11 @@ class Computer(initialMemory: List<Int>, private val input: Int) {
         when (opCode) {
             99 -> {
                 // Program is finished
-                return this
+                if (returnOutput) {
+                    throw IllegalStateException("No output")
+                } else {
+                    return 0
+                }
             }
             1 -> {
                 // Add
@@ -34,13 +48,16 @@ class Computer(initialMemory: List<Int>, private val input: Int) {
             }
             3 -> {
                 // Input
-                mem[mem[pc + 1]] = input
+                mem[mem[pc + 1]] = input.removeAt(0)
                 pc += 2
             }
             4 -> {
                 // Output
                 output.add(if (mode1 == 0) mem[mem[pc + 1]] else mem[pc + 1])
                 pc += 2
+                if (returnOutput) {
+                    return output.last
+                }
             }
             5 -> {
                 // Jump-if-true
@@ -88,9 +105,11 @@ class Computer(initialMemory: List<Int>, private val input: Int) {
                 throw RuntimeException("Unknown opcode ${mem[pc]}")
             }
         }
-        run()
+        return run(returnOutput)
+    }
 
-        return this
+    fun addInput(newInput: Int) {
+        input.add(newInput)
     }
 
     fun getMemory(): List<Int> {
