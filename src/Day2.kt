@@ -3,7 +3,7 @@ import java.lang.RuntimeException
 fun main() {
     val input = readInputFile("Day2.txt")
         .split(",")
-        .map { it.toInt() } // Convert to list of integers
+        .map { it.toLong() } // Convert to list of integers
         .toMutableList()
 
     input[1] = 12
@@ -14,10 +14,10 @@ fun main() {
     println("2.1:")
     println(computer.getMemory()[0])
 
-    val wantedOutput = 19690720
+    val wantedOutput = 19690720L
     // Since the number of possibilities are relatively small, just brute force:
-    (0..99).forEach outer@ { i ->
-        (0..99).forEach { j ->
+    (0L..99).forEach outer@ { i ->
+        (0L..99).forEach { j ->
             try {
                 input[1] = i
                 input[2] = j

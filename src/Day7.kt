@@ -1,14 +1,14 @@
 import com.marcinmoskala.math.permutations
 import java.lang.IllegalStateException
-import java.lang.Integer.max
+import java.lang.Long.max
 
 fun main() {
     val program = readInputFile("Day7.txt")
         .split(",")
-        .map { it.toInt() } // Convert to list of integers
+        .map { it.toLong() } // Convert to list of integers
 
-    var maxOutput1 = 0
-    (0..4).toList().permutations().forEach { (a, b, c, d, e) ->
+    var maxOutput1 = 0L
+    (0L..4).toList().permutations().forEach { (a, b, c, d, e) ->
         val computerA = Computer(program, listOf(a, 0)).run()
         val computerB = Computer(program, listOf(b, computerA.getOutput().last())).run()
         val computerC = Computer(program, listOf(c, computerB.getOutput().last())).run()
@@ -21,14 +21,14 @@ fun main() {
     println("7.1:")
     println(maxOutput1)
 
-    var maxOutput2 = 0
-    (5..9).toList().permutations().forEach { (a, b, c, d, e) ->
+    var maxOutput2 = 0L
+    (5L..9).toList().permutations().forEach { (a, b, c, d, e) ->
         val computerA = Computer(program, listOf(a, 0))
         val computerB = Computer(program, listOf(b))
         val computerC = Computer(program, listOf(c))
         val computerD = Computer(program, listOf(d))
         val computerE = Computer(program, listOf(e))
-        var lastOutput = 0
+        var lastOutput = 0L
         try {
             while (true) {
                 val outA = computerA.runForOutput()

@@ -4,7 +4,7 @@ import java.util.*
 fun main() {
     val program = readInputFile("Day5.txt")
         .split(",")
-        .map { it.toInt() } // Convert to list of integers
+        .map { it.toLong() } // Convert to list of integers
 
     val computer1 = Computer(program, listOf(1))
     computer1.run()

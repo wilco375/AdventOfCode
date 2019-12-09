@@ -1,22 +1,23 @@
 import java.lang.RuntimeException
 import java.util.*
 
-class Computer(initialMemory: List<Int>, input: List<Int>) {
-    private val input: MutableList<Int> = input.toMutableList()
-    private var output = LinkedList<Int>()
+class Computer(initialMemory: List<Long>, input: List<Long>) {
+    private val input: MutableList<Long> = input.toMutableList()
+    private var output = LinkedList<Long>()
     private var mem = initialMemory.toMutableList() // Memory
     private var pc = 0 // Program counter
+    private var relBase = 0 // Relative base
 
     fun run(): Computer {
         run(false)
         return this
     }
 
-    fun runForOutput(): Int {
+    fun runForOutput(): Long {
         return run(true)
     }
 
-    private fun run(returnOutput: Boolean): Int {
+    private fun run(returnOutput: Boolean): Long {
         val instr = mem[pc].toString().padStart(5, '0')
         val opCode = instr.substring(3, 5).toInt()
         val mode = listOf(
@@ -25,8 +26,25 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
             instr.substring(0, 1).toInt()
         )
 
-        fun getParam(i: Int): Int {
-            return if (mode[i - 1] == 0) mem[mem[pc + i]] else mem[pc + i]
+        fun getParamIndex(i: Int): Int {
+            val index =  when (mode[i - 1]) {
+                0 -> mem[pc + i].toInt() // Position mode
+                1 -> pc + i // Immediate mode
+                2 -> relBase + mem[pc + i].toInt() // Relative mode
+                else -> throw UnsupportedOperationException("Unsupported parameter mode ${mode[i - 1]}")
+            }
+            while (index > mem.size - 1) {
+                mem.add(0)
+            }
+            return index
+        }
+
+        fun getParam(i: Int): Long {
+            return mem[getParamIndex(i)]
+        }
+
+        fun setParam(i: Int, value: Long) {
+            mem[getParamIndex(i)] = value
         }
 
         when (opCode) {
@@ -40,17 +58,17 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
             }
             1 -> {
                 // Add
-                mem[mem[pc + 3]] = getParam(1) + getParam(2)
+                setParam(3, getParam(1) + getParam(2))
                 pc += 4
             }
             2 -> {
                 // Multiply
-                mem[mem[pc + 3]] = getParam(1) * getParam(2)
+                setParam(3, getParam(1) * getParam(2))
                 pc += 4
             }
             3 -> {
                 // Input
-                mem[mem[pc + 1]] = input.removeAt(0)
+                setParam(1, input.removeAt(0))
                 pc += 2
             }
             4 -> {
@@ -63,16 +81,16 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
             }
             5 -> {
                 // Jump-if-true
-                if (getParam(1) != 0) {
-                    pc = getParam(2)
+                if (getParam(1) != 0L) {
+                    pc = getParam(2).toInt()
                 } else {
                     pc += 3
                 }
             }
             6 -> {
                 // Jump-if-false
-                if (getParam(1) == 0) {
-                    pc = getParam(2)
+                if (getParam(1) == 0L) {
+                    pc = getParam(2).toInt()
                 } else {
                     pc += 3
                 }
@@ -80,20 +98,25 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
             7 -> {
                 // Less than
                 if (getParam(1) < getParam(2)) {
-                    mem[mem[pc + 3]] = 1
+                    setParam(3, 1)
                 } else {
-                    mem[mem[pc + 3]] = 0
+                    setParam(3, 0)
                 }
                 pc += 4
             }
             8 -> {
                 // Equals
                 if (getParam(1) == getParam(2)) {
-                    mem[mem[pc + 3]] = 1
+                    setParam(3, 1)
                 } else {
-                    mem[mem[pc + 3]] = 0
+                    setParam(3, 0)
                 }
                 pc += 4
+            }
+            9 -> {
+                // Adjust relative base
+                relBase += getParam(1).toInt()
+                pc += 2
             }
             else -> {
                 throw RuntimeException("Unknown opcode ${mem[pc]}")
@@ -102,15 +125,15 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
         return run(returnOutput)
     }
 
-    fun addInput(newInput: Int) {
+    fun addInput(newInput: Long) {
         input.add(newInput)
     }
 
-    fun getMemory(): List<Int> {
+    fun getMemory(): List<Long> {
         return mem
     }
 
-    fun getOutput(): List<Int> {
+    fun getOutput(): List<Long> {
         return output
     }
 }
