@@ -19,9 +19,15 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
     private fun run(returnOutput: Boolean): Int {
         val instr = mem[pc].toString().padStart(5, '0')
         val opCode = instr.substring(3, 5).toInt()
-        val mode1 = instr.substring(2, 3).toInt()
-        val mode2 = instr.substring(1, 2).toInt()
-        val mode3 = instr.substring(0, 1).toInt()
+        val mode = listOf(
+            instr.substring(2, 3).toInt(),
+            instr.substring(1, 2).toInt(),
+            instr.substring(0, 1).toInt()
+        )
+
+        fun getParam(i: Int): Int {
+            return if (mode[i - 1] == 0) mem[mem[pc + i]] else mem[pc + i]
+        }
 
         when (opCode) {
             99 -> {
@@ -34,16 +40,12 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
             }
             1 -> {
                 // Add
-                val param1 = if (mode1 == 0) mem[mem[pc + 1]] else mem[pc + 1]
-                val param2 = if (mode2 == 0) mem[mem[pc + 2]] else mem[pc + 2]
-                mem[mem[pc + 3]] = param1 + param2
+                mem[mem[pc + 3]] = getParam(1) + getParam(2)
                 pc += 4
             }
             2 -> {
                 // Multiply
-                val param1 = if (mode1 == 0) mem[mem[pc + 1]] else mem[pc + 1]
-                val param2 = if (mode2 == 0) mem[mem[pc + 2]] else mem[pc + 2]
-                mem[mem[pc + 3]] = param1 * param2
+                mem[mem[pc + 3]] = getParam(1) * getParam(2)
                 pc += 4
             }
             3 -> {
@@ -53,7 +55,7 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
             }
             4 -> {
                 // Output
-                output.add(if (mode1 == 0) mem[mem[pc + 1]] else mem[pc + 1])
+                output.add(getParam(1))
                 pc += 2
                 if (returnOutput) {
                     return output.last
@@ -61,29 +63,23 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
             }
             5 -> {
                 // Jump-if-true
-                val param1 = if (mode1 == 0) mem[mem[pc + 1]] else mem[pc + 1]
-                if (param1 != 0) {
-                    val param2 = if (mode2 == 0) mem[mem[pc + 2]] else mem[pc + 2]
-                    pc = param2
+                if (getParam(1) != 0) {
+                    pc = getParam(2)
                 } else {
                     pc += 3
                 }
             }
             6 -> {
                 // Jump-if-false
-                val param1 = if (mode1 == 0) mem[mem[pc + 1]] else mem[pc + 1]
-                if (param1 == 0) {
-                    val param2 = if (mode2 == 0) mem[mem[pc + 2]] else mem[pc + 2]
-                    pc = param2
+                if (getParam(1) == 0) {
+                    pc = getParam(2)
                 } else {
                     pc += 3
                 }
             }
             7 -> {
                 // Less than
-                val param1 = if (mode1 == 0) mem[mem[pc + 1]] else mem[pc + 1]
-                val param2 = if (mode2 == 0) mem[mem[pc + 2]] else mem[pc + 2]
-                if (param1 < param2) {
+                if (getParam(1) < getParam(2)) {
                     mem[mem[pc + 3]] = 1
                 } else {
                     mem[mem[pc + 3]] = 0
@@ -92,9 +88,7 @@ class Computer(initialMemory: List<Int>, input: List<Int>) {
             }
             8 -> {
                 // Equals
-                val param1 = if (mode1 == 0) mem[mem[pc + 1]] else mem[pc + 1]
-                val param2 = if (mode2 == 0) mem[mem[pc + 2]] else mem[pc + 2]
-                if (param1 == param2) {
+                if (getParam(1) == getParam(2)) {
                     mem[mem[pc + 3]] = 1
                 } else {
                     mem[mem[pc + 3]] = 0
