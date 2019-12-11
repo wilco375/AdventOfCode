@@ -1,7 +1,7 @@
 import java.lang.RuntimeException
 import java.util.*
 
-class Computer(initialMemory: List<Long>, input: List<Long>) {
+class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
     private val input: MutableList<Long> = input.toMutableList()
     private var output = LinkedList<Long>()
     private var mem = initialMemory.toMutableList() // Memory
