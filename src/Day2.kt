@@ -1,7 +1,5 @@
 fun main() {
-    val input = readInputFile("Day2.txt")
-        .split(",")
-        .map { it.toLong() } // Convert to list of integers
+    val input = readIntcode("Day2.txt")
         .toMutableList()
 
     input[1] = 12

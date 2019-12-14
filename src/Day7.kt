@@ -2,9 +2,7 @@ import com.marcinmoskala.math.permutations
 import java.lang.Long.max
 
 fun main() {
-    val program = readInputFile("Day7.txt")
-        .split(",")
-        .map { it.toLong() } // Convert to list of integers
+    val program = readIntcode("Day7.txt")
 
     var maxOutput1 = 0L
     (0L..4).toList().permutations().forEach { (a, b, c, d, e) ->

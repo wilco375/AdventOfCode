@@ -1,7 +1,5 @@
 fun main() {
-    val program1 = readInputFile("Day13.txt")
-        .split(",")
-        .map { it.toLong() } // Convert to list of integers
+    val program1 = readIntcode("Day13.txt")
 
     val computer1 = Computer(program1).run()
     val output1 = computer1.getOutput().filterIndexed { i, v -> i % 3 == 2 && v == 2L }.size

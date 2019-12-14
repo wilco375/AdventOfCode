@@ -1,8 +1,6 @@
 fun main() {
     fun run(initialColor: Long): HashMap<Pair<Int, Int>, Long> {
-        val program = readInputFile("Day11.txt")
-            .split(",")
-            .map { it.toLong() } // Convert to list of integers
+        val program = readIntcode("Day11.txt")
 
         val computer1 = Computer(program)
 

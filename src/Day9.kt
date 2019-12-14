@@ -1,7 +1,5 @@
 fun main() {
-    val program = readInputFile("Day9.txt")
-        .split(",")
-        .map { it.toLong() } // Convert to list of integers
+    val program = readIntcode("Day9.txt")
 
     val output1 = Computer(program, listOf(1)).runForOutput()
     println("9.1:")
