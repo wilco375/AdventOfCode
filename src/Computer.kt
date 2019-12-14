@@ -1,4 +1,3 @@
-import java.lang.RuntimeException
 import java.util.*
 
 class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
@@ -9,15 +8,49 @@ class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
     private var relBase = 0 // Relative base
 
     fun run(): Computer {
-        run(false)
+        var result = 1
+        while (result != 0 && result != 3) {
+            result = runInstr()
+        }
+        if (result == 3) {
+            throw IllegalStateException("Program needs input")
+        }
         return this
     }
 
     fun runForOutput(): Long {
-        return run(true)
+        var result = 1
+        while (result == 1) {
+            result = runInstr()
+        }
+        if (result == 0) {
+            throw IllegalStateException("Program finished without output")
+        }
+        if (result == 3) {
+            throw IllegalStateException("Program needs input")
+        }
+        return output.last
     }
 
-    private fun run(returnOutput: Boolean): Long {
+    fun runForInput(): Long {
+        var result = 1
+        while (result == 1 || result == 2) {
+            result = runInstr()
+        }
+        if (result == 0) {
+            throw IllegalStateException("Program finished without input")
+        }
+        return output.last
+    }
+
+    /**
+     * @return return status:
+     * 0: Exit - Program is finished
+     * 1: Continue - Instruction was executed and program is not finished yet
+     * 2: Output - Program outputted something
+     * 3: Input - Program needs input
+     */
+    private fun runInstr(): Int {
         val instr = mem[pc].toString().padStart(5, '0')
         val opCode = instr.substring(3, 5).toInt()
         val mode = listOf(
@@ -50,11 +83,7 @@ class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
         when (opCode) {
             99 -> {
                 // Program is finished
-                if (returnOutput) {
-                    throw IllegalStateException("No output")
-                } else {
-                    return 0
-                }
+                return 0
             }
             1 -> {
                 // Add
@@ -68,6 +97,9 @@ class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
             }
             3 -> {
                 // Input
+                if (input.size == 0) {
+                    return 3
+                }
                 setParam(1, input.removeAt(0))
                 pc += 2
             }
@@ -75,9 +107,7 @@ class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
                 // Output
                 output.add(getParam(1))
                 pc += 2
-                if (returnOutput) {
-                    return output.last
-                }
+                return 2
             }
             5 -> {
                 // Jump-if-true
@@ -122,7 +152,7 @@ class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
                 throw RuntimeException("Unknown opcode ${mem[pc]}")
             }
         }
-        return run(returnOutput)
+        return 1
     }
 
     fun addInput(newInput: Long) {
@@ -135,5 +165,9 @@ class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
 
     fun getOutput(): List<Long> {
         return output
+    }
+
+    fun clearOutput() {
+        output.clear()
     }
 }

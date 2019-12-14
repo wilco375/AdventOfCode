@@ -1,6 +1,3 @@
-import java.lang.RuntimeException
-import java.util.*
-
 fun main() {
     val program = readInputFile("Day5.txt")
         .split(",")

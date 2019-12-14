@@ -1,5 +1,3 @@
-import java.lang.IllegalStateException
-
 fun main() {
     fun run(initialColor: Long): HashMap<Pair<Int, Int>, Long> {
         val program = readInputFile("Day11.txt")

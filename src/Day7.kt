@@ -1,5 +1,4 @@
 import com.marcinmoskala.math.permutations
-import java.lang.IllegalStateException
 import java.lang.Long.max
 
 fun main() {
