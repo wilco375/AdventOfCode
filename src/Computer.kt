@@ -1,7 +1,7 @@
 import java.util.*
 
-class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
-    private val input: MutableList<Long> = input.toMutableList()
+class Computer(private val initialMemory: List<Long>, private val initialInput: List<Long> = listOf()) {
+    private var input: MutableList<Long> = initialInput.toMutableList()
     private var output = LinkedList<Long>()
     private var mem = initialMemory.toMutableList() // Memory
     private var pc = 0 // Program counter
@@ -169,5 +169,21 @@ class Computer(initialMemory: List<Long>, input: List<Long> = listOf()) {
 
     fun clearOutput() {
         output.clear()
+    }
+
+    fun reset() {
+        mem = initialMemory.toMutableList()
+        input = initialInput.toMutableList()
+        output.clear()
+        pc = 0
+        relBase = 0
+    }
+
+    fun clone(): Computer {
+        val cloneComputer = Computer(ArrayList(mem), ArrayList(input))
+        cloneComputer.output = LinkedList(output)
+        cloneComputer.pc = pc
+        cloneComputer.relBase = relBase
+        return cloneComputer
     }
 }

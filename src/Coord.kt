@@ -14,4 +14,10 @@ class Coord(val x: Int, val y: Int) {
     override fun hashCode(): Int {
         return Pair(x, y).hashCode()
     }
+
+    override fun toString(): String {
+        return "(x=$x, y=$y)"
+    }
+
+
 }
