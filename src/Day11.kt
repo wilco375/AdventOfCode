@@ -1,11 +1,28 @@
-fun main() {
-    fun run(initialColor: Long): HashMap<Pair<Int, Int>, Long> {
+class Day11 : AbstractDay() {
+    override fun run() = sequence<Any> {
+        val output1 = run(0).keys.size
+        yield(output1) // Part 1
+
+        val output2 = run(1)
+        var formattedOutput = ""
+        val ys = output2.keys.map { it.y }
+        for (y in (ys.max()!! downTo ys.min()!!)) {
+            val xs = output2.keys.map { it.x }
+            for (x in (xs.min()!!..xs.max()!!)) {
+                formattedOutput += (if (output2.getOrDefault(Coord(x, y), 0L) == 0L) " " else "█")
+            }
+            formattedOutput += "\n"
+        }
+        yield(formattedOutput) // Part 2
+    }
+
+    private fun run(initialColor: Long): HashMap<Coord, Long> {
         val program = readIntcode("Day11.txt")
 
         val computer1 = Computer(program)
 
-        val grid = HashMap<Pair<Int, Int>, Long>() // Maps coordinates to a color
-        var currentCoord = Pair(0, 0)
+        val grid = HashMap<Coord, Long>() // Maps coordinates to a color
+        var currentCoord = Coord(0, 0)
         var currentDirection = 0
         var initial = true
 
@@ -27,30 +44,15 @@ fun main() {
                 }
                 currentDirection %= 360
                 when (currentDirection) {
-                    0 -> currentCoord = Pair(currentCoord.first, currentCoord.second + 1)
-                    90 -> currentCoord = Pair(currentCoord.first + 1, currentCoord.second)
-                    180 -> currentCoord = Pair(currentCoord.first, currentCoord.second - 1)
-                    270 -> currentCoord = Pair(currentCoord.first - 1, currentCoord.second)
+                    0 -> currentCoord = Coord(currentCoord.x, currentCoord.y + 1)
+                    90 -> currentCoord = Coord(currentCoord.x + 1, currentCoord.y)
+                    180 -> currentCoord = Coord(currentCoord.x, currentCoord.y - 1)
+                    270 -> currentCoord = Coord(currentCoord.x - 1, currentCoord.y)
                 }
             }
         } catch (e: IllegalStateException) {
             // Program is finished
             return grid
         }
-    }
-
-    println("11.1:")
-    val output1 = run(0).keys.size
-    println(output1)
-
-    println("11.2:")
-    val output2 = run(1)
-    val ys = output2.keys.map { it.second }
-    for (y in (ys.max()!! downTo ys.min()!!)) {
-        val xs = output2.keys.map { it.first }
-        for (x in (xs.min()!! .. xs.max()!!)) {
-            print(if (output2.getOrDefault(Pair(x, y), 0L) == 0L) " " else "█")
-        }
-        println()
     }
 }
